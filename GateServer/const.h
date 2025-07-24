@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <memory>
@@ -16,9 +17,11 @@
 #include <queue>
 #include <atomic>
 #include <condition_variable>
+#include <assert.h>
 
 #include "ConfigMgr.h"
 #include "Singleton.h"
+#include "hiredis.h"
 
 using namespace boost;
 
