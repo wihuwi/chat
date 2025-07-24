@@ -29,10 +29,11 @@ class ConfigMgr
 public:
 	ConfigMgr();
 	~ConfigMgr();
-	ConfigMgr(const ConfigMgr& other);
 	ConfigMgr& operator=(const ConfigMgr& other);
 	SectionInfo operator[](const std::string& key);
+	static ConfigMgr& GetInstance();
 private:
+	ConfigMgr(const ConfigMgr& other);
 	std::map<std::string, SectionInfo> _config_map;
 };
 

@@ -12,6 +12,5 @@ public:
 private:
 	asio::io_context& _ioc;
 	asio::ip::tcp::acceptor _acceptor;
-	asio::ip::tcp::socket _socket;
 };
 

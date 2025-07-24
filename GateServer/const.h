@@ -13,17 +13,17 @@
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "ConfigMgr.h"
+#include <queue>
+#include <atomic>
+#include <condition_variable>
 
+#include "ConfigMgr.h"
 #include "Singleton.h"
 
 using namespace boost;
 
 enum ErrorCodes {
-	Success = 1001,
+	Success = 0,
 	Error_json = 1002,
 	RPCRrror = 1003
 };
-
-class ConfigMgr;
-extern ConfigMgr gCfgMgr;

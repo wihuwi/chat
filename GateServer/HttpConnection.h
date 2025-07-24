@@ -9,11 +9,12 @@ class HttpConnection: public std::enable_shared_from_this<HttpConnection>
 {
 	friend LogicSystem;
 public:
-	HttpConnection(asio::ip::tcp::socket socket);
+	HttpConnection(asio::io_context& ioc);
 	~HttpConnection() = default;
 	void Start();
-	void PreParseGetParam();
+	asio::ip::tcp::socket& GetSocket();
 private:
+	void PreParseGetParam();
 	void CheckDeadLine();
 	void WriteResponse();
 	void HandleReq();

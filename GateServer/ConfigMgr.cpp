@@ -36,6 +36,7 @@ ConfigMgr& ConfigMgr::operator=(const ConfigMgr& other) {
 		return *this;
 	}
 	_config_map = other._config_map;
+	return *this;
 }
 
 SectionInfo ConfigMgr::operator[](const std::string& key) {
@@ -43,4 +44,9 @@ SectionInfo ConfigMgr::operator[](const std::string& key) {
 		return SectionInfo();
 	}
 	return _config_map[key];
+}
+
+ConfigMgr& ConfigMgr::GetInstance() {
+	static ConfigMgr cfg_mgr;
+	return cfg_mgr;
 }
