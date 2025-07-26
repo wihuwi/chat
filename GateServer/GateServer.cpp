@@ -3,12 +3,14 @@
 #include "CServer.h"
 #include "ConfigMgr.h"
 #include "const.h"
+#include "RedisMgr.h"
 
-ConfigMgr gCfgMgr = ConfigMgr();
+
 
 int main()
 {
-    short port = atoi(gCfgMgr["GateServer"]["Port"].c_str());
+    ConfigMgr& cfgMgr = ConfigMgr::GetInstance();
+    short port = atoi(cfgMgr["GateServer"]["Port"].c_str());
     std::cout << port;
     try {
         asio::io_context ioc;

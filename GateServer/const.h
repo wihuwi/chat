@@ -27,6 +27,27 @@ using namespace boost;
 
 enum ErrorCodes {
 	Success = 0,
-	Error_json = 1002,
-	RPCRrror = 1003
+	Error_json = 1001,
+	RPCRrror = 1002,
+	VarifyExpired = 1003,
+	VarifyCodeErr = 1004,
+	UserExist = 1005,
+	PasswdErr = 1006,
+	EmailNotMatch = 1007,
+	PasswdUpFailed = 1008,
+	PasswdInvalid = 1009
+};
+
+#define CODEPREFIX "code_"
+
+class Defer {
+public:
+	Defer(std::function<void()> func) {
+		_func = func;
+	}
+	~Defer() {
+		_func();
+	}
+private:
+	std::function<void()> _func;
 };

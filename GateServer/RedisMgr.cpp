@@ -1,7 +1,7 @@
 #include "RedisMgr.h"
 
 RedisConPool::RedisConPool(int size, const char* host, int port, const char* pwd) :
-	_poolSize(0), _host(host), _port(port) {
+	_poolSize(0), _host(host), _port(port), _b_stop(false) {
 	for (int i = 0; i < size; i++) {
 		redisContext* con = redisConnect(host, port);
 		if (con == NULL || con->err != 0) {
