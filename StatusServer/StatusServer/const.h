@@ -19,9 +19,8 @@
 #include <condition_variable>
 #include <assert.h>
 
-#include "ConfigMgr.h"
-#include "Singleton.h"
-#include "hiredis.h"
+//#include "Singleton.h"
+//#include "hiredis.h"
 
 using namespace boost;
 

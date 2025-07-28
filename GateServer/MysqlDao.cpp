@@ -181,6 +181,9 @@ MysqlDao::~MysqlDao() {
 
 int MysqlDao::RegUser(const std::string& name, const std::string& passwd, const std::string& email) {
 	auto con = _pool->GetConnection();
+	Defer([this, &con]() {
+		_pool->ReturnConnection(std::move(con));
+		});
 	try {
 		if (con == nullptr) {
 			return -1;
@@ -198,44 +201,42 @@ int MysqlDao::RegUser(const std::string& name, const std::string& passwd, const 
 		if (res->next()) {
 			int result = res->getInt("result");
 			std::cout << "Result: " << result << std::endl;
-			_pool->ReturnConnection(std::move(con));
 			return result;
 		}
-		_pool->ReturnConnection(std::move(con));
 		return -1;
 	}
 	catch (sql::SQLException& e) {
-		std::cout << "Regsiter user failed: " << e.what() << std::endl;
+		std::cerr << "SQLException: " << e.what();
+		std::cerr << " (MySQL error code: " << e.getErrorCode();
+		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+		return false;
 	}
 }
 
 bool MysqlDao::CheckEmail(const std::string& name, const std::string& email) {
 	auto con = _pool->GetConnection();
+	Defer dfer([this, &con]() {
+		_pool->ReturnConnection(std::move(con));
+		});
 	//为什么不用 move 因为内部已经 move ？
 	try {
 		if (con == nullptr) {
-			_pool->ReturnConnection(std::move(con));
-			//对应 CheckPro 上
 			std::cout << "GetConnection failed" << std::endl;
 			return false;
 		}
 		std::unique_ptr<sql::PreparedStatement> pre_stat(con->_con->prepareStatement("Select email from user where name = ?"));
 		pre_stat->setString(1, name);
 		std::unique_ptr<sql::ResultSet> res(pre_stat->executeQuery());
-
 		//这段逻辑是什么
 		while (res->next()) {
 			std::cout << "Check Email: " << res->getString("email") << std::endl;
 			if (email != res->getString("email")) {
-				_pool->ReturnConnection(std::move(con));
 				return false;
 			}
-			_pool->ReturnConnection(std::move(con));
 			return true;
 		}
 	}
 	catch (sql::SQLException& e) {
-		_pool->ReturnConnection(std::move(con));
 		std::cerr << "SQLException: " << e.what();
 		std::cerr << " (MySQL error code: " << e.getErrorCode();
 		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
@@ -246,23 +247,65 @@ bool MysqlDao::CheckEmail(const std::string& name, const std::string& email) {
 
 bool MysqlDao::UpdatePwd(const std::string& name, const std::string& pwd) {
 	auto con = _pool->GetConnection();
+	Defer dfer([this, &con]() {
+		_pool->ReturnConnection(std::move(con));
+		});
 	try {
 		if (con == nullptr) {
-			_pool->ReturnConnection(std::move(con));
+			std::cout << "GetConnection failed" << std::endl;
 			return false;
 		}
-
 		std::unique_ptr<sql::PreparedStatement> pre_stat(con->_con->prepareStatement("Update user Set pwd = ? where name = ?"));
 		pre_stat->setString(1, pwd);
 		pre_stat->setString(2, name);
 
 		int updateCount = pre_stat->executeUpdate();
 		std::cout << "Updated rows: " << updateCount << std::endl;
-		_pool->ReturnConnection(std::move(con));
 		return true;
 	}
 	catch (sql::SQLException& e) {
+		std::cerr << "SQLException: " << e.what();
+		std::cerr << " (MySQL error code: " << e.getErrorCode();
+		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+		return false;
+	}
+}
+
+bool MysqlDao::CheckPwd(const std::string& email, const std::string& pwd, UserInfo& userinfo) {
+	auto con = _pool->GetConnection();
+
+	Defer defer([this, &con]() {
+		//为什么可以传&con，uniptr？？
 		_pool->ReturnConnection(std::move(con));
+		});
+
+	try {
+		if (con == nullptr) {
+			return false;
+		}
+		std::unique_ptr<sql::PreparedStatement> pre_stat(con->_con->prepareStatement("select * from user where email = ?"));
+		pre_stat->setString(1, email);
+		std::unique_ptr<sql::ResultSet> res(pre_stat->executeQuery());
+
+		std::string origin_pwd = "";
+		// 遍历结果集
+		while (res->next()) {
+			origin_pwd = res->getString("pwd");
+			// 输出查询到的密码
+			std::cout << "Password: " << origin_pwd << std::endl;
+			break;
+		}
+		if (pwd != origin_pwd) {
+			return false;
+		}
+
+		userinfo.uid = res->getInt("uid");
+		userinfo.email = email;
+		userinfo.passwd = pwd;
+		userinfo.name = res->getString("name");
+		return true;
+	}
+	catch (sql::SQLException& e) {
 		std::cerr << "SQLException: " << e.what();
 		std::cerr << " (MySQL error code: " << e.getErrorCode();
 		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;

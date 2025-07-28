@@ -7,7 +7,7 @@ HttpMgr::HttpMgr() {
 
 
 void HttpMgr::PostHttpReq(QUrl url, QJsonObject json, ReqId req_id, Modules mod){
-
+    qDebug() <<url;
     QByteArray data = QJsonDocument(json).toJson();
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentLengthHeader, QByteArray::number(data.length()));
@@ -37,6 +37,9 @@ void HttpMgr::slot_http_finish(ReqId req_id, QString data, ErrorCodes err, Modul
     }
     case Modules::RESETMOD:{
         emit this->sig_reset_mod_finish(req_id, data, err);
+    }
+    case Modules::LOGINMOD:{
+        emit this->sig_login_mod_finish(req_id, data, err);
     }
     }
 }
