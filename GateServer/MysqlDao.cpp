@@ -45,7 +45,7 @@ std::unique_ptr<SqlConnection> MysqlPool::GetConnection() {
 	return con;
 }
 
-void MysqlPool::ReturnConnectioin(std::unique_ptr<SqlConnection> con) {
+void MysqlPool::ReturnConnection(std::unique_ptr<SqlConnection> con) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	if (_b_stop) {
 		return;
@@ -198,10 +198,10 @@ int MysqlDao::RegUser(const std::string& name, const std::string& passwd, const 
 		if (res->next()) {
 			int result = res->getInt("result");
 			std::cout << "Result: " << result << std::endl;
-			_pool->ReturnConnectioin(std::move(con));
+			_pool->ReturnConnection(std::move(con));
 			return result;
 		}
-		_pool->ReturnConnectioin(std::move(con));
+		_pool->ReturnConnection(std::move(con));
 		return -1;
 	}
 	catch (sql::SQLException& e) {
@@ -209,3 +209,63 @@ int MysqlDao::RegUser(const std::string& name, const std::string& passwd, const 
 	}
 }
 
+bool MysqlDao::CheckEmail(const std::string& name, const std::string& email) {
+	auto con = _pool->GetConnection();
+	//为什么不用 move 因为内部已经 move ？
+	try {
+		if (con == nullptr) {
+			_pool->ReturnConnection(std::move(con));
+			//对应 CheckPro 上
+			std::cout << "GetConnection failed" << std::endl;
+			return false;
+		}
+		std::unique_ptr<sql::PreparedStatement> pre_stat(con->_con->prepareStatement("Select email from user where name = ?"));
+		pre_stat->setString(1, name);
+		std::unique_ptr<sql::ResultSet> res(pre_stat->executeQuery());
+
+		//这段逻辑是什么
+		while (res->next()) {
+			std::cout << "Check Email: " << res->getString("email") << std::endl;
+			if (email != res->getString("email")) {
+				_pool->ReturnConnection(std::move(con));
+				return false;
+			}
+			_pool->ReturnConnection(std::move(con));
+			return true;
+		}
+	}
+	catch (sql::SQLException& e) {
+		_pool->ReturnConnection(std::move(con));
+		std::cerr << "SQLException: " << e.what();
+		std::cerr << " (MySQL error code: " << e.getErrorCode();
+		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+		return false;
+	}
+
+}
+
+bool MysqlDao::UpdatePwd(const std::string& name, const std::string& pwd) {
+	auto con = _pool->GetConnection();
+	try {
+		if (con == nullptr) {
+			_pool->ReturnConnection(std::move(con));
+			return false;
+		}
+
+		std::unique_ptr<sql::PreparedStatement> pre_stat(con->_con->prepareStatement("Update user Set pwd = ? where name = ?"));
+		pre_stat->setString(1, pwd);
+		pre_stat->setString(2, name);
+
+		int updateCount = pre_stat->executeUpdate();
+		std::cout << "Updated rows: " << updateCount << std::endl;
+		_pool->ReturnConnection(std::move(con));
+		return true;
+	}
+	catch (sql::SQLException& e) {
+		_pool->ReturnConnection(std::move(con));
+		std::cerr << "SQLException: " << e.what();
+		std::cerr << " (MySQL error code: " << e.getErrorCode();
+		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+		return false;
+	}
+}

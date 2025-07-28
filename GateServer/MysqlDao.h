@@ -21,7 +21,7 @@ public:
 	MysqlPool(const std::string& url, const std::string& user, const std::string& pass, const std::string& schema, int poolSize);
 	~MysqlPool();
 	std::unique_ptr<SqlConnection> GetConnection();
-	void ReturnConnectioin(std::unique_ptr<SqlConnection>);
+	void ReturnConnection(std::unique_ptr<SqlConnection>);
 	void CheckConnection();
 	void CheckConnectionPro();
 	bool ReConnect(int64_t timestamp);
@@ -53,6 +53,8 @@ public:
 	MysqlDao();
 	~MysqlDao();
 	int RegUser(const std::string& name, const std::string& passwd, const std::string& email);
+	bool CheckEmail(const std::string& name, const std::string& email);
+	bool UpdatePwd(const std::string& name, const std::string& pwd);
 
 private:
 	std::unique_ptr<MysqlPool> _pool;

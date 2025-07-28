@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/icon.ico</file>
+        <file>icons/Image.png</file>
+        <file>icons/Image [2].png</file>
+        <file>style/stylesheet.qss</file>
+        <file>icons/visible_hover.png</file>
+        <file>icons/unvisible.png</file>
+        <file>icons/unvisible_hover.png</file>
+        <file>icons/visible.png</file>
+    </qresource>
+</RCC>
