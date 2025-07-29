@@ -1,5 +1,6 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
+#include "tcpmgr.h"
 
 LoginDialog::LoginDialog(QWidget *parent)
     : QDialog(parent)
@@ -25,6 +26,10 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(HttpMgr::GetInstance().get(), &HttpMgr::sig_login_mod_finish, this, &LoginDialog::slot_login_mod_finish);
     InitHandler();
 
+    //连接登录
+    connect(this, &LoginDialog::sig_connect_tcp, TcpMgr::GetInstance().get(), &TcpMgr::slot_connect_tcp);
+    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_con_success, this, &LoginDialog::slot_con_success);
+    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_login_failed, this, &LoginDialog::slot_login_failed);
 }
 
 LoginDialog::~LoginDialog()
@@ -94,12 +99,12 @@ void LoginDialog::InitHandler(){
         server.Token = jsonObj["token"].toString();
         server.Uid = jsonObj["uid"].toInt();
 
-        emit sig_connect_tcp(server);
-
         _uid = server.Uid;
         _token = server.Token;
 
         ShowTip("登陆成功", true);
+
+        emit sig_connect_tcp(server);
 
     });
 }
@@ -142,4 +147,27 @@ void LoginDialog::slot_login_mod_finish(ReqId reqId, QString data, ErrorCodes er
     }
 
     _handlers[reqId](jsonDoc.object());
+}
+
+void LoginDialog::slot_con_success(bool success){
+    if(success){
+        ShowTip("正在连接中", true);
+        QJsonObject jsonObj;
+        jsonObj["token"] = _token;
+        jsonObj["uid"] = _uid;
+
+        QJsonDocument jsonDoc(jsonObj);
+        QString data = jsonDoc.toJson(QJsonDocument::Indented);
+
+        TcpMgr::GetInstance()->emit sig_send_data(ID_CHAT_LOGIN, data);
+    }
+    else{
+        ShowTip("连接错误", false);
+        qDebug()<<success;
+    }
+}
+
+void LoginDialog::slot_login_failed(int err){
+    ShowTip("登录错误", false);
+    qDebug()<< "err code: "<<err;
 }

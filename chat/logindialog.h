@@ -45,6 +45,8 @@ private slots:
     void slot_forget_pwd();
     void on_log_btn_clicked();
     void slot_login_mod_finish(ReqId reqId, QString data, ErrorCodes err);
+    void slot_con_success(bool success);
+    void slot_login_failed(int err);
 };
 
 #endif // LOGINDIALOG_H
