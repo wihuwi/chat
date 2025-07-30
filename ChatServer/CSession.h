@@ -41,8 +41,8 @@ private:
 
 class LogicNode {
 public:
-	LogicNode(std::shared_ptr<CSession> session, std::shared_ptr<SendNode> node) :_session(session), _node(node) {}
+	LogicNode(std::shared_ptr<CSession> session, std::shared_ptr<RecvNode> node) :_session(session), _node(node) {}
 
 	std::shared_ptr<CSession> _session;
-	std::shared_ptr<SendNode> _node;
+	std::shared_ptr<RecvNode> _node;
 };
