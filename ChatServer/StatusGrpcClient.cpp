@@ -26,3 +26,23 @@ StatusGrpcClient::StatusGrpcClient()
 	std::string port = gCfgMgr["StatusServer"]["Port"];
 	pool_.reset(new StatusConPool(5, host, port));
 }
+
+message::LoginRsp StatusGrpcClient::Login(int uid, std::string token) {
+	message::LoginReq request;
+	message::LoginRsp reply;
+	ClientContext context;
+	request.set_uid(uid);
+	request.set_token(token);
+	auto stub = pool_->getConnection();
+	Defer defer([this, &stub]() {
+		pool_->returnConnection(std::move(stub));
+		});
+	Status status = stub->Login(&context, request, &reply);
+	if (status.ok()) {
+		return reply;
+	}
+	else {
+		reply.set_error(ErrorCodes::RPCFailed);
+		return reply;
+	}
+}

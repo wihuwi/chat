@@ -80,6 +80,7 @@ class StatusGrpcClient:public Singleton<StatusGrpcClient>
 public:
 	~StatusGrpcClient();
 	GetChatServerRsp GetChatServer(int uid);
+	message::LoginRsp Login(int uid, std::string token);
 
 private:
 	StatusGrpcClient();

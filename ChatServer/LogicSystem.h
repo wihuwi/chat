@@ -23,6 +23,7 @@ private:
 	void DealMsg();
 	void RegisterCallBacks();
 	void HellowordCallBack(std::shared_ptr<CSession>, const short& msg_id, const std::string& msg_data);
+	void LoginHandler(std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data);
 
 	std::queue<std::shared_ptr<LogicNode>> _msg_que;
 	std::thread _work_thread;

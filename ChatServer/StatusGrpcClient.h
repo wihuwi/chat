@@ -2,6 +2,10 @@
 #include "const.h"
 #include "Singleton.h"
 #include "ConfigMgr.h"
+#include "message.pb.h"
+#include <grpcpp\impl\codegen\client_callback.h>
+#include <grpcpp\create_channel.h>
+#include "message.grpc.pb.h"
 
 using grpc::Channel;
 using grpc::Status;
@@ -64,7 +68,7 @@ public:
 	}
 
 private:
-	atomic<bool> b_stop_;
+	std::atomic<bool> b_stop_;
 	size_t poolSize_;
 	std::string host_;
 	std::string port_;
@@ -81,6 +85,7 @@ public:
 
 	}
 	GetChatServerRsp GetChatServer(int uid);
+	message::LoginRsp Login(int uid, std::string token);
 
 private:
 	StatusGrpcClient();
