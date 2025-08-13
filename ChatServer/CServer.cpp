@@ -1,5 +1,6 @@
 #include "CServer.h"
 #include "CSession.h"
+#include "UserMgr.h"
 
 CServer::CServer( boost::asio::io_context& ioc, short port) :_ioc(ioc), _port(port),
 _acceptor(_ioc, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)) {
@@ -21,7 +22,7 @@ void CServer::HandleAccept(std::shared_ptr<CSession> session, const boost::syste
 	if (!ec) {
 		session->Start();
 		std::lock_guard<std::mutex> lock(_mutex);
-		_sessions[session->GetUuid()] = session;
+		_sessions[session->GetSessionId()] = session;
 	}
 	else {
 		std::cerr << "error:" << ec.what();
@@ -29,7 +30,10 @@ void CServer::HandleAccept(std::shared_ptr<CSession> session, const boost::syste
 	StartAccept();
 }
 
-void CServer::ClearSession(std::string uuid) {
+void CServer::ClearSession(std::string session_id) {
+	if (_sessions.find(session_id) != _sessions.end()) {
+		UserMgr::GetInstance()->RmvUserSession(_sessions[session_id]->GetUserId());
+	}
 	std::lock_guard<std::mutex> lock(_mutex);
-	_sessions.erase(uuid);
+	_sessions.erase(session_id);
 }

@@ -16,7 +16,9 @@ public:
 	CSession(boost::asio::io_context& ioc, CServer* server);
 	~CSession();
 	boost::asio::ip::tcp::socket& GetSocket();
-	std::string GetUuid();
+	std::string GetSessionId();
+	void SetUserId(int uid);
+	int GetUserId();
 	void Start();
 	void AsyncReadHead(int len);
 	void AsyncReadFull(int len, std::function<void(const boost::system::error_code& errcode, std::size_t bytes_transferred)>handler);
@@ -29,7 +31,8 @@ public:
 	void Close();
 private:
 	boost::asio::ip::tcp::socket _socket;
-	std::string _uuid;
+	std::string _session_id;
+	int _user_uid;
 	char _data[MAX_LENGTH];
 	std::queue<std::shared_ptr<SendNode>> _msg_que;
 	std::mutex _que_mutex;

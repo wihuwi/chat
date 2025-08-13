@@ -1,5 +1,6 @@
 #pragma once
 #include "const.h"
+#include "data.h"
 #include <thread>
 
 class SqlConnection {
@@ -120,12 +121,6 @@ private:
 	std::thread _check_thread;
 };
 
-struct UserInfo {
-	std::string name;
-	std::string pwd;
-	int uid;
-	std::string email;
-};
 
 class MysqlDao
 {
@@ -136,6 +131,7 @@ public:
 	bool CheckEmail(const std::string& name, const std::string& email);
 	bool UpdatePwd(const std::string& name, const std::string& newpwd);
 	bool CheckPwd(const std::string& name, const std::string& pwd, UserInfo& userInfo);
+	std::shared_ptr<UserInfo> GetUser(int uid);
 private:
 	std::unique_ptr<MySqlPool> pool_;
 };

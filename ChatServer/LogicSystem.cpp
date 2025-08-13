@@ -1,5 +1,8 @@
 #include "LogicSystem.h"
 #include "StatusGrpcClient.h"
+#include "RedisMgr.h"
+#include "MysqlMgr.h"
+#include "UserMgr.h"
 
 LogicSystem::LogicSystem() :_b_stop(false) {
 	RegisterCallBacks();
@@ -74,13 +77,105 @@ void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short& m
 	Json::Reader reader;
 	Json::Value src_root;
 	bool b_parse = reader.parse(msg_data, src_root);
-	std::cout << "user login uid is  " << src_root["uid"].asInt() << " user token  is "
-		<< src_root["token"].asString() << std::endl;
-	message::LoginRsp reply = StatusGrpcClient::GetInstance()->Login(src_root["uid"].asInt(), src_root["token"].asString());
-	Json::Value rt_root;
-	rt_root["error"] = reply.error();
-	rt_root["uid"] = reply.uid();
-	rt_root["token"] = reply.token();
-	std::string jsonStr = rt_root.toStyledString();
-	session->Send(jsonStr, MSG_IDS::MSG_CHAT_LOGIN_RSP);
+	auto uid = src_root["uid"].asInt();
+	auto token = src_root["token"].asString();
+	std::cout << "user login uid is  " << uid << " user token  is "
+		<< token << std::endl;
+
+	Json::Value rtvalue;
+	Defer defer([this, &rtvalue, &session]() {
+		std::string json_str = rtvalue.toStyledString();
+		session->Send(json_str, MSG_IDS::MSG_CHAT_LOGIN_RSP);
+		});
+	
+	std::string uid_str = std::to_string(uid);
+	std::string token_key = USERTOKENPREFIX + uid_str;
+	std::string token_value = "";
+	bool success = RedisMgr::GetInstance()->Get(token_key, token_value);
+	if (!success) {
+		rtvalue["error"] = ErrorCodes::UidInvalid;
+		return;
+	}
+	if (token_value != token) {
+		rtvalue["error"] = ErrorCodes::TokenInvalid;
+		return;
+	}
+
+	std::string base_key = USER_BASE_INFO + uid;
+	std::shared_ptr<UserInfo> user_info = std::make_shared<UserInfo>();
+	bool b_base = GetBaseInfo(base_key, uid, user_info);
+	if (!b_base) {
+		rtvalue["error"] = ErrorCodes::UidInvalid;
+		return;
+	}
+
+	rtvalue["error"] = ErrorCodes::Success;
+	rtvalue["uid"] = uid;
+	rtvalue["pwd"] = user_info->pwd;
+	rtvalue["name"] = user_info->name;
+	rtvalue["email"] = user_info->email;
+	rtvalue["nick"] = user_info->nick;
+	rtvalue["desc"] = user_info->desc;
+	rtvalue["sex"] = user_info->sex;
+	rtvalue["icon"] = user_info->icon;
+	
+	//传输数据
+
+	std::string servername = ConfigMgr::Inst().GetValue("SelfServer", "Name");
+	std::string redis_ret = RedisMgr::GetInstance()->HGet(LOGIN_COUNT, servername);
+	//服务器人数++
+	int count = 0;
+	if (!redis_ret.empty()) {
+		count = std::stoi(redis_ret);
+	}
+	count++;
+	RedisMgr::GetInstance()->HSet(LOGIN_COUNT, servername, std::to_string(count));
+
+	//记录用户登录服务器ip
+	std::string ip_key = USERIPPREFIX + uid_str;
+	RedisMgr::GetInstance()->Set(ip_key, servername);
+
+	//方便之后的踢人
+	UserMgr::GetInstance()->SetUserSession(uid, session);
+}
+
+bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userinfo)
+{
+	std::string info_str;
+	if (RedisMgr::GetInstance()->Get(base_key, info_str)) {
+		Json::Reader reader;
+		Json::Value root;
+		reader.parse(info_str, root);
+		userinfo->uid = root["uid"].asInt();
+		userinfo->name = root["name"].asString();
+		userinfo->pwd = root["pwd"].asString();
+		userinfo->email = root["email"].asString();
+		userinfo->nick = root["nick"].asString();
+		userinfo->desc = root["desc"].asString();
+		userinfo->sex = root["sex"].asInt();
+		userinfo->icon = root["icon"].asString();
+		std::cout << "user login uid is  " << userinfo->uid << " name  is "
+			<< userinfo->name << " pwd is " << userinfo->pwd << " email is " << userinfo->email << std::endl;
+	}
+	else {
+		std::shared_ptr<UserInfo> user_info = nullptr;
+		user_info = MysqlMgr::GetInstance()->GetUser(uid);
+		if (user_info == nullptr) {
+			return false;
+		}
+
+		userinfo = user_info;
+
+		Json::Value redis_root;
+		redis_root["uid"] = uid;
+		redis_root["pwd"] = userinfo->pwd;
+		redis_root["name"] = userinfo->name;
+		redis_root["email"] = userinfo->email;
+		redis_root["nick"] = userinfo->nick;
+		redis_root["desc"] = userinfo->desc;
+		redis_root["sex"] = userinfo->sex;
+		redis_root["icon"] = userinfo->icon;
+		RedisMgr::GetInstance()->Set(base_key, redis_root.toStyledString());
+	}
+	return true;
 }

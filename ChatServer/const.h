@@ -41,7 +41,8 @@ enum ErrorCodes {
 	EmailNotMatch = 1007,  //邮箱不匹配
 	PasswdUpFailed = 1008,  //更新密码失败
 	PasswdInvalid = 1009,   //密码更新失败
-	RPCGetFailed = 1010,  //获取rpc请求失败
+	TokenInvalid = 1010,   //Token失效
+	UidInvalid = 1011,  //uid无效
 };
 
 
@@ -77,3 +78,9 @@ enum MSG_IDS {
 	MSG_CHAT_LOGIN = 1005,    //用户登陆
 	MSG_CHAT_LOGIN_RSP = 1006 //用户登陆回包
 };
+
+#define USERIPPREFIX "uip_"
+#define USERTOKENPREFIX "utoken_"
+#define IPCOUNTPREFIX "ipcount_"
+#define USER_BASE_INFO "ubaseinfo_"
+#define LOGIN_COUNT "logincount"
