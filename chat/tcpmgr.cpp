@@ -1,4 +1,5 @@
 #include "tcpmgr.h"
+#include "usermgr.h"
 
 TcpMgr::TcpMgr():_host(""), _port(0),_id(0), _len(0), _b_recv_pending(false) {
     connect(&_sock, &QTcpSocket::connected, this, [this](){
@@ -31,13 +32,14 @@ TcpMgr::TcpMgr():_host(""), _port(0),_id(0), _len(0), _b_recv_pending(false) {
             qDebug()<<"recv msg is: "<<data;
 
             HandleMsg(static_cast<ReqId>(_id), data, _len);
+            qDebug()<<"handleMsg";
         }
     });
 
     //error
     connect(&_sock, &QTcpSocket::errorOccurred, this, [this](){
         qDebug()<<"sock err" << _sock.error();
-        emit sig_con_success(ErrorCodes::ERR_NETWORK);
+        emit sig_con_success(static_cast<int>(ErrorCodes::ERR_NETWORK));
     });
 
     connect(this, &TcpMgr::sig_send_data, this, &TcpMgr::slot_send_data);
@@ -45,8 +47,12 @@ TcpMgr::TcpMgr():_host(""), _port(0),_id(0), _len(0), _b_recv_pending(false) {
     InitHandlers();
 }
 
+TcpMgr::~TcpMgr(){
+
+}
+
 void TcpMgr::InitHandlers(){
-    _handlers.insert(ReqId::ID_CHAT_LOGIN_RSP, [this](ReqId id, const QByteArray& data, quint16 len){
+    _handlers.insert(ReqId::ID_CHAT_LOGIN_RSP, [&](ReqId id, const QByteArray& data, quint16 len){
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
         if(jsonDoc.isNull()){
             qDebug()<<"tcpMgr jsonDoc err";
@@ -56,8 +62,8 @@ void TcpMgr::InitHandlers(){
         QJsonObject jsonObj = jsonDoc.object();
         if(!jsonObj.contains("error")){
             jsonObj["error"] = ErrorCodes::ERR_JSON;
-            qDebug()<<"tcpMgr jsonDoc err";
-            emit sig_login_failed(ERR_JSON);
+            qDebug()<<"tcpMgr jsonObj err";
+            emit sig_login_failed(static_cast<int>(ERR_JSON));
             return;
         }
 
@@ -68,7 +74,63 @@ void TcpMgr::InitHandlers(){
         }
 
         //emit sig_con_success(0);
+        qDebug()<<"reqid:" <<id;
+        UserMgr::GetInstance()->SetUid(jsonObj["uid"].toInt());
+        UserMgr::GetInstance()->SetName(jsonObj["name"].toString());
+        UserMgr::GetInstance()->SetToken(jsonObj["token"].toString());
         emit sig_switch_chatdlg();
+    });
+
+    _handlers.insert(ReqId::ID_SEARCH_USER_RSP, [&](ReqId id, const QByteArray& data, quint16 len){
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+        if(jsonDoc.isNull()){
+            qDebug()<<"tcpMgr jsonDoc err";
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+        if(!jsonObj.contains("error")){
+            jsonObj["error"] = ErrorCodes::ERR_JSON;
+            qDebug()<<"tcpMgr jsonObj err";
+            emit sig_login_failed(static_cast<int>(ERR_JSON));
+            return;
+        }
+
+        if(jsonObj["error"].toInt() != ErrorCodes::SUCCESS){
+            qDebug()<<"tcpMgr err: "<< jsonObj["error"];
+            emit sig_login_failed(jsonObj["error"].toInt());
+            return;
+        }
+
+        auto search_info =  std::make_shared<SearchInfo>(jsonObj["uid"].toInt(), jsonObj["name"].toString(),
+                                                        jsonObj["nick"].toString(), jsonObj["desc"].toString(),
+                                                        jsonObj["sex"].toInt(), jsonObj["icon"].toString());
+
+        emit sig_user_search(search_info);
+    });
+
+    _handlers.insert(ReqId::ID_ADD_FRIEND_RSP, [&](ReqId id, const QByteArray& data, quint16 len){
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+        if(jsonDoc.isNull()){
+            qDebug()<<"tcpMgr jsonDoc err";
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+        if(!jsonObj.contains("error")){
+            jsonObj["error"] = ErrorCodes::ERR_JSON;
+            qDebug()<<"tcpMgr jsonObj err";
+            emit sig_login_failed(static_cast<int>(ERR_JSON));
+            return;
+        }
+
+        if(jsonObj["error"].toInt() != ErrorCodes::SUCCESS){
+            qDebug()<<"tcpMgr err: "<< jsonObj["error"];
+            emit sig_login_failed(jsonObj["error"].toInt());
+            return;
+        }
+
+        qDebug()<<"Add Friend Success";
     });
 }
 
@@ -84,16 +146,30 @@ void TcpMgr::HandleMsg(ReqId id, const QByteArray& data, quint16 len){
 void TcpMgr::slot_connect_tcp(ServerInfo info){
     _port = static_cast<quint16>(info.Port.toInt());
     _host = info.Host;
+    qDebug()<<_host<<_port;
     _sock.connectToHost(_host, _port);
 }
 
-void TcpMgr::slot_send_data(ReqId req_id, const QByteArray& data){
-    quint16 id = static_cast<quint16>(req_id);
-    quint16 len = static_cast<quint16>(data.size());
-    QByteArray sendData;
-    QDataStream out(&sendData, QIODevice::WriteOnly);
+void TcpMgr::slot_send_data(ReqId reqId, QByteArray dataBytes){
+    uint16_t id = reqId;
+
+    // 计算长度（使用网络字节序转换）
+    quint16 len = static_cast<quint16>(dataBytes.length());
+
+    // 创建一个QByteArray用于存储要发送的所有数据
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+
+    // 设置数据流使用网络字节序
     out.setByteOrder(QDataStream::BigEndian);
+
+    // 写入ID和长度
     out << id << len;
-    sendData.append(data);
-    _sock.write(sendData);
+
+    // 添加字符串数据
+    block.append(dataBytes);
+
+    // 发送数据
+    _sock.write(block);
+    qDebug() << "tcp mgr send byte data is " << block ;
 }

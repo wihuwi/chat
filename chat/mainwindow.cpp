@@ -6,7 +6,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    //设置窗口图标
+    QIcon icon(":/icons/icon.ico");
+    this->setWindowIcon(icon);
     _log_ = new LoginDialog(this);
     connect(_log_, &LoginDialog::RegisterClicked, this, &MainWindow::SwitchRegister);
     connect(_log_, &LoginDialog::SwitchReset, this, &MainWindow::SwitchReset);
@@ -14,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(_log_);
     _log_->show();
 
+    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_switch_chatdlg, this, &MainWindow::SwitchChat);
+    //TcpMgr::GetInstance()->sig_switch_chatdlg();
 }
 
 MainWindow::~MainWindow()
@@ -58,4 +62,12 @@ void MainWindow::SwitchReset(){
     setCentralWidget(_reset_);
     //_log_->hide();
     _reset_->show();
+}
+
+void MainWindow::SwitchChat(){
+    _chat_ = new ChatDialog(this);
+    _chat_->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    this->setCentralWidget(_chat_);
+    _log_->hide();
+    _chat_->show();
 }

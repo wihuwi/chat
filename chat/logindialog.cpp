@@ -1,6 +1,5 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
-#include "tcpmgr.h"
 
 LoginDialog::LoginDialog(QWidget *parent)
     : QDialog(parent)
@@ -12,7 +11,7 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(ui->reg_btn, &QPushButton::clicked, this, &LoginDialog::RegisterClicked);
 
     //init forget
-    ui->forgetLab->SetState("normal", "normal_hover","select", "select_hover");
+    ui->forgetLab->SetState("normal", "normal_hover", "normal_hover", "select", "select_hover", "select_hover");
     connect(ui->forgetLab, &ClickedLabel::clicked, this, &LoginDialog::slot_forget_pwd);
 
     //连接输入提示错误
@@ -87,9 +86,11 @@ bool LoginDialog::CheckPassValid(){
 
 void LoginDialog::InitHandler(){
     _handlers.insert(ReqId::ID_LOGIN_USER, [this](const QJsonObject& jsonObj){
+        qDebug()<<"ID_LOGIN_UER";
         if(jsonObj["error"].toInt()){
             std::cout<<"handler occur error: "<<jsonObj["error"].toInt();
             ShowTip("处理错误", false);
+            ui->log_btn->setEnabled(true);
             return;
         }
 
@@ -117,11 +118,12 @@ void LoginDialog::slot_forget_pwd(){
 void LoginDialog::on_log_btn_clicked()
 {
     if(CheckEmailValid() && CheckPassValid()){
+        ui->log_btn->setEnabled(false);
         QJsonObject jsonObj;
         jsonObj["email"] = ui->email_edit->text();
         jsonObj["passwd"] = ui->pass_edit->text();
         QString url = gate_url_prefix + "/user_login";
-        HttpMgr::GetInstance()->PostHttpReq(url, jsonObj,
+        HttpMgr::GetInstance()->PostHttpReq(QUrl(url), jsonObj,
                                             ReqId::ID_LOGIN_USER, Modules::LOGINMOD);
     }
 }
@@ -145,7 +147,8 @@ void LoginDialog::slot_login_mod_finish(ReqId reqId, QString data, ErrorCodes er
         ShowTip("Json 解析错误", false);
         return;
     }
-
+    auto it = _handlers.find(reqId);
+    qDebug()<<reqId;
     _handlers[reqId](jsonDoc.object());
 }
 
@@ -157,12 +160,15 @@ void LoginDialog::slot_con_success(bool success){
         jsonObj["uid"] = _uid;
 
         QJsonDocument jsonDoc(jsonObj);
-        QString data = jsonDoc.toJson(QJsonDocument::Indented);
+        QByteArray data = jsonDoc.toJson(QJsonDocument::Indented);
 
-        TcpMgr::GetInstance()->emit sig_send_data(ID_CHAT_LOGIN, data);
+        qDebug()<<"send msg";
+        TcpMgr::GetInstance()->sig_send_data(ReqId::ID_CHAT_LOGIN, data);
+        //发送其他类的信号不需要加emit
     }
     else{
         ShowTip("连接错误", false);
+        ui->log_btn->setEnabled(false);
         qDebug()<<success;
     }
 }

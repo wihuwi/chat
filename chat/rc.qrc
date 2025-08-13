@@ -4,9 +4,57 @@
         <file>icons/Image.png</file>
         <file>icons/Image [2].png</file>
         <file>style/stylesheet.qss</file>
-        <file>icons/visible_hover.png</file>
+        <file>icons/add_friend.png</file>
+        <file>icons/add_friend_hover.png</file>
+        <file>icons/add_friend_normal.png</file>
+        <file>icons/filedir.png</file>
+        <file>icons/filedir_hover.png</file>
+        <file>icons/filedir_press.png</file>
+        <file>icons/smile.png</file>
+        <file>icons/smile_hover.png</file>
+        <file>icons/smile_press.png</file>
+        <file>icons/close_search.png</file>
+        <file>icons/loading.gif</file>
+        <file>icons/search.png</file>
+        <file>icons/close_transparent.png</file>
         <file>icons/unvisible.png</file>
         <file>icons/unvisible_hover.png</file>
         <file>icons/visible.png</file>
+        <file>icons/visible_hover.png</file>
+        <file>icons/head_1.jpg</file>
+        <file>icons/head_2.jpg</file>
+        <file>icons/head_3.jpg</file>
+        <file>icons/head_4.jpg</file>
+        <file>icons/head_5.jpg</file>
+        <file>icons/addtip.png</file>
+        <file>icons/arowdown.png</file>
+        <file>icons/chat_icon.png</file>
+        <file>icons/chat_icon_hover.png</file>
+        <file>icons/chat_icon_press.png</file>
+        <file>icons/chat_icon_select_hover.png</file>
+        <file>icons/chat_icon_select_press.png</file>
+        <file>icons/contact_list.png</file>
+        <file>icons/contact_list_hover.png</file>
+        <file>icons/contact_list_press.png</file>
+        <file>icons/female.png</file>
+        <file>icons/ice.png</file>
+        <file>icons/male.png</file>
+        <file>icons/msg_chat_hover.png</file>
+        <file>icons/msg_chat_normal.png</file>
+        <file>icons/msg_chat_press.png</file>
+        <file>icons/red_point.png</file>
+        <file>icons/right_tip.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/settings_hover.png</file>
+        <file>icons/settings_press.png</file>
+        <file>icons/settings_select_hover.png</file>
+        <file>icons/settings_select_press.png</file>
+        <file>icons/tipclose.png</file>
+        <file>icons/video_chat_hover.png</file>
+        <file>icons/video_chat_normal.png</file>
+        <file>icons/video_chat_press.png</file>
+        <file>icons/voice_chat_hover.png</file>
+        <file>icons/voice_chat_normal.png</file>
+        <file>icons/voice_chat_press.png</file>
     </qresource>
 </RCC>

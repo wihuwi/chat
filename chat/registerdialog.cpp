@@ -35,8 +35,8 @@ RegisterDialog::RegisterDialog(QWidget *parent)
 
     //密码 & 确认密码 & 密码可见
     //不设置objectname呢
-    ui->pass_visible->SetState("visible", "visible_hover", "unvisible", "unvisible_hover");
-    ui->confirm_visible->SetState("visible", "visible_hover", "unvisible", "unvisible_hover");
+    ui->pass_visible->SetState("visible", "visible_hover", "visible_hover", "unvisible", "unvisible_hover", "unvisible_hover");
+    ui->confirm_visible->SetState("visible", "visible_hover", "visible_hover", "unvisible", "unvisible_hover", "unvisible_hover");
     ui->pass_edit->setEchoMode(QLineEdit::Normal);
     ui->varify_edit->setEchoMode(QLineEdit::Normal);
     connect(ui->pass_visible, &ClickedLabel::clicked, this, [this](){

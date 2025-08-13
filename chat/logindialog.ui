@@ -66,6 +66,16 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QLabel" name="err_tip">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -74,12 +84,12 @@
        <item>
         <widget class="QLabel" name="user_lab">
          <property name="text">
-          <string>账号：</string>
+          <string>邮箱：</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="name_edit"/>
+        <widget class="QLineEdit" name="email_edit"/>
        </item>
       </layout>
      </item>
