@@ -1,3 +1,5 @@
+#ifndef CONFIGMGR_H
+#define CONFIGMGR_H
 #include <fstream>  
 #include <boost/property_tree/ptree.hpp>  
 #include <boost/property_tree/ini_parser.hpp>  
@@ -79,3 +81,6 @@ private:
 	// ´æ´¢sectionºÍkey-value¶ÔµÄmap  
 	std::map<std::string, SectionInfo> _config_map;
 };
+
+
+#endif

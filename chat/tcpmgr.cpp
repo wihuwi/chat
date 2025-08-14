@@ -85,6 +85,7 @@ void TcpMgr::InitHandlers(){
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
         if(jsonDoc.isNull()){
             qDebug()<<"tcpMgr jsonDoc err";
+            sig_user_search(nullptr);
             return;
         }
 
@@ -92,13 +93,13 @@ void TcpMgr::InitHandlers(){
         if(!jsonObj.contains("error")){
             jsonObj["error"] = ErrorCodes::ERR_JSON;
             qDebug()<<"tcpMgr jsonObj err";
-            emit sig_login_failed(static_cast<int>(ERR_JSON));
+            sig_user_search(nullptr);
             return;
         }
 
         if(jsonObj["error"].toInt() != ErrorCodes::SUCCESS){
             qDebug()<<"tcpMgr err: "<< jsonObj["error"];
-            emit sig_login_failed(jsonObj["error"].toInt());
+            sig_user_search(nullptr);
             return;
         }
 
@@ -120,17 +121,45 @@ void TcpMgr::InitHandlers(){
         if(!jsonObj.contains("error")){
             jsonObj["error"] = ErrorCodes::ERR_JSON;
             qDebug()<<"tcpMgr jsonObj err";
-            emit sig_login_failed(static_cast<int>(ERR_JSON));
             return;
         }
 
         if(jsonObj["error"].toInt() != ErrorCodes::SUCCESS){
             qDebug()<<"tcpMgr err: "<< jsonObj["error"];
-            emit sig_login_failed(jsonObj["error"].toInt());
             return;
         }
 
-        qDebug()<<"Add Friend Success";
+        qDebug()<<"Add Friend Apply Success";
+    });
+
+    _handlers.insert(ReqId::ID_NOTIFY_ADD_FRIEND_REQ, [&](ReqId id, const QByteArray& data, quint16 len){
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+        if(jsonDoc.isNull()){
+            qDebug()<<"ID_NOTIFY_ADD_FRIEND_REQ jsonDoc err";
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+        if(!jsonObj.contains("error")){
+            jsonObj["error"] = ErrorCodes::ERR_JSON;
+            qDebug()<<"ID_NOTIFY_ADD_FRIEND_REQ jsonObj err";
+            return;
+        }
+
+        if(jsonObj["error"].toInt() != ErrorCodes::SUCCESS){
+            qDebug()<<"ID_NOTIFY_ADD_FRIEND_REQ err: "<< jsonObj["error"];
+            return;
+        }
+
+        int from_uid = jsonObj["applyuid"].toInt();
+        QString name = jsonObj["name"].toString();
+        QString desc = jsonObj["desc"].toString();
+        QString icon = jsonObj["icon"].toString();
+        QString nick = jsonObj["nick"].toString();
+        int sex = jsonObj["sex"].toInt();
+        std::shared_ptr<AddFriendApply> applyInfo = std::make_shared<AddFriendApply>(from_uid, name, desc, icon, nick, sex);
+        emit sig_friend_apply(applyInfo);
+        qDebug()<<"ID_NOTIFY_ADD_FRIEND_REQ Success";
     });
 }
 

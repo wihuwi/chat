@@ -321,12 +321,12 @@ bool RedisMgr::HDel(const std::string& key, const std::string& field)
 		return false;
 	}
 
-	Defer defer([&connect, this]() {
+	Defer defer1([&connect, this]() {
 		_con_pool->returnConnection(connect);
 		});
 
 	redisReply* reply = (redisReply*)redisCommand(connect, "HDEL %s %s", key.c_str(), field.c_str());
-	Defer defer([&reply]() {
+	Defer defer2([&reply]() {
 		if (!reply) {
 			freeReplyObject(reply);
 		}

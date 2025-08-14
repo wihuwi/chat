@@ -10,6 +10,7 @@ public:
 	bool CheckEmail(const std::string& name, const std::string& email);
 	bool UpdatePwd(const std::string& name, const std::string& email);
 	bool CheckPwd(const std::string& name, const std::string& pwd, UserInfo& userInfo);
+	bool AddFriendApply(const int& from_uid, const int& to_uid);
 	std::shared_ptr<UserInfo> GetUser(int uid);
 	std::shared_ptr<UserInfo> GetUser(std::string name);
 private:

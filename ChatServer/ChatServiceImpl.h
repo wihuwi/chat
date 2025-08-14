@@ -2,6 +2,7 @@
 #include <grpcpp/grpcpp.h>
 #include "message.grpc.pb.h"
 #include "message.pb.h"
+#include "data.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -22,9 +23,9 @@ class ChatServiceImpl final: public ChatService::Service
 public:
 	ChatServiceImpl();
 	~ChatServiceImpl();
-	virtual Status NotifyAddFriend(ServerContext* context, const AddFriendReq* request, AddFriendRsp* response);
-	virtual Status NotifyAuthFriend(ServerContext* context, const AuthFriendReq* request, AuthFriendRsp* response);
-	virtual Status NotifyTextChatMsg(ServerContext* context, const TextChatMsgReq* request, TextChatMsgRsp* response);
-
+	Status NotifyAddFriend(ServerContext* context, const AddFriendReq* request,AddFriendRsp* reply) override;
+	Status NotifyAuthFriend(ServerContext* context,const AuthFriendReq* request, AuthFriendRsp* response) override;
+	Status NotifyTextChatMsg(::grpc::ServerContext* context,const TextChatMsgReq* request, TextChatMsgRsp* response) override;
+	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userinfo);
 };
 

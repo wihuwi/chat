@@ -31,7 +31,8 @@ public:
 	ChatConPool(int pool_size, std::string host, std::string port) :_host(host),
 		_port(port), _pool_size(pool_size), _b_stop(false) {
 		for (int i = 0; i < pool_size; i++) {
-			auto channel = grpc::CreateChannel(host + ":" + port, grpc::InsecureChannelCredentials());
+			std::shared_ptr<Channel> channel = grpc::CreateChannel(host + ":" + port, grpc::InsecureChannelCredentials());
+			std::cout << channel << std::endl;
 			_connections.push(ChatService::NewStub(channel));
 		}
 	}
@@ -85,10 +86,10 @@ class ChatGrpcClient: public Singleton<ChatGrpcClient>
 	friend Singleton<ChatGrpcClient>;
 public:
 	~ChatGrpcClient();
-	AddFriendRsp NotifyAddFriend(AddFriendReq);
-	AuthFriendRsp RplyAddFriend(AuthFriendReq);
-	TextChatMsgRsp NotifyTextChatMsg(TextChatMsgReq);
+	AddFriendRsp NotifyAddFriend(std::string server_ip, const AddFriendReq& req);
+	AuthFriendRsp NotifyAuthFriend(std::string server_ip, const AuthFriendReq& req);
 	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userinfo);
+	TextChatMsgRsp NotifyTextChatMsg(std::string server_ip, const TextChatMsgReq& req, const Json::Value& rtvalue);
 
 private:
 	ChatGrpcClient();

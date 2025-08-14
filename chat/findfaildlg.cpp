@@ -20,6 +20,6 @@ FindFailDlg::~FindFailDlg()
 
 void FindFailDlg::on_fail_sure_btn_clicked()
 {
-    ui->fail_sure_btn->hide();
+    this->hide();
 }
 

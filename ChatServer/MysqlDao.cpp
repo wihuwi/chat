@@ -165,6 +165,40 @@ bool MysqlDao::CheckPwd(const std::string& name, const std::string& pwd, UserInf
 	}
 }
 
+bool MysqlDao::AddFriendApply(const int& from, const int& to)
+{
+	auto con = pool_->getConnection();
+	if (con == nullptr) {
+		return false;
+	}
+
+	Defer defer([this, &con]() {
+		pool_->returnConnection(std::move(con));
+		});
+
+	try {
+		// 插入数据，若已存在则更新数据
+		std::unique_ptr<sql::PreparedStatement> pstmt(con->_con->prepareStatement("INSERT INTO friend_apply (from_uid, to_uid) values (?,?) "
+			"ON DUPLICATE KEY UPDATE from_uid = VALUES(from_uid), to_uid = VALUES(to_uid)"));
+		pstmt->setInt(1, from);
+		pstmt->setInt(2, to);
+		// 执行
+		int rowAffected = pstmt->executeUpdate();
+		if (rowAffected < 0) {
+			return false;
+		}
+		return true;
+	}
+	catch (sql::SQLException& e) {
+		std::cerr << "SQLException: " << e.what();
+		std::cerr << " (MySQL error code: " << e.getErrorCode();
+		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
 std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
 	auto con = pool_->getConnection();
 	if (con == nullptr) {
