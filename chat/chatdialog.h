@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "global.h"
 #include "statewidget.h"
+#include "userdata.h"
 
 namespace Ui {
 class ChatDialog;
@@ -39,6 +40,8 @@ private slots:
     //void slot_loading_chat_user();
     void slot_text_changed(const QString& str);
     void slot_switch_apply_page();
+public slots:
+    void slot_friend_apply(std::shared_ptr<AddFriendApply>);
 };
 
 #endif // CHATDIALOG_H

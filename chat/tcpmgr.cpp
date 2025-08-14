@@ -78,6 +78,20 @@ void TcpMgr::InitHandlers(){
         UserMgr::GetInstance()->SetUid(jsonObj["uid"].toInt());
         UserMgr::GetInstance()->SetName(jsonObj["name"].toString());
         UserMgr::GetInstance()->SetToken(jsonObj["token"].toString());
+
+        //添加申请列表
+        auto uid = jsonObj["uid"].toInt();
+        auto name = jsonObj["name"].toString();
+        auto nick = jsonObj["nick"].toString();
+        auto icon = jsonObj["icon"].toString();
+        auto sex = jsonObj["sex"].toInt();
+        auto desc = jsonObj["desc"].toString();
+        auto user_info = std::make_shared<UserInfo>(uid, name, nick, icon, sex,"",desc);
+        UserMgr::GetInstance()->SetUserInfo(user_info);
+        if(jsonObj.contains("apply_list")){
+            UserMgr::GetInstance()->AppendApplyList(jsonObj["apply_list"].toArray());
+        }
+
         emit sig_switch_chatdlg();
     });
 
@@ -158,6 +172,7 @@ void TcpMgr::InitHandlers(){
         QString nick = jsonObj["nick"].toString();
         int sex = jsonObj["sex"].toInt();
         std::shared_ptr<AddFriendApply> applyInfo = std::make_shared<AddFriendApply>(from_uid, name, desc, icon, nick, sex);
+
         emit sig_friend_apply(applyInfo);
         qDebug()<<"ID_NOTIFY_ADD_FRIEND_REQ Success";
     });

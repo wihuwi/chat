@@ -125,7 +125,24 @@ void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short& m
 	rtvalue["sex"] = user_info->sex;
 	rtvalue["icon"] = user_info->icon;
 	
-	//传输数据
+	//验证信息
+	std::vector<std::shared_ptr<ApplyInfo>> apply_list;
+	auto b_apply = GetFriendApplyInfo(uid, apply_list);
+	if (b_apply) {
+		for (auto& apply : apply_list) {
+			Json::Value obj;
+			obj["name"] = apply->_name;
+			obj["uid"] = apply->_uid;
+			obj["icon"] = apply->_icon;
+			obj["nick"] = apply->_nick;
+			obj["sex"] = apply->_sex;
+			obj["desc"] = apply->_desc;
+			obj["status"] = apply->_status;
+			rtvalue["apply_list"].append(obj);
+		}
+	}
+
+	//好友信息
 
 	std::string servername = ConfigMgr::Inst().GetValue("SelfServer", "Name");
 	std::string redis_ret = RedisMgr::GetInstance()->HGet(LOGIN_COUNT, servername);
@@ -420,4 +437,9 @@ void LogicSystem::GetUserByName(std::string name, Json::Value& rtvalue)
 	rtvalue["desc"] = user_info->desc;
 	rtvalue["error"] = ErrorCodes::Success;
 	rtvalue["sex"] = user_info->sex;
+}
+
+bool LogicSystem::GetFriendApplyInfo(int uid, std::vector<std::shared_ptr<ApplyInfo>>& list)
+{
+	return MysqlMgr::GetInstance()->GetApplyList(uid, list, 0, 10);
 }

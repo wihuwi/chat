@@ -5,6 +5,8 @@
 #include <QPixmap>
 #include "customizeedit.h"
 #include "chatuserwid.h"
+#include "tcpmgr.h"
+#include "usermgr.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -56,6 +58,9 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     //设置searchlist的 search_edit
     ui->search_list->SetSearchEdit(ui->search_edit);
+
+    //连接添加好友通知回包 -》
+    connect(TcpMgr::GetInstance().get(), &TcpMgr::sig_friend_apply, this, &ChatDialog::slot_friend_apply);
 }
 
 bool ChatDialog::eventFilter(QObject* watched, QEvent* event){
@@ -169,4 +174,19 @@ void ChatDialog::slot_text_changed(const QString& str){
 void ChatDialog::slot_switch_apply_page()
 {
     ui->stackedWidget->setCurrentWidget(ui->apply_friend_page);
+}
+
+void ChatDialog::slot_friend_apply(std::shared_ptr<AddFriendApply> apply){
+    qDebug() << "receive apply friend slot, applyuid is " << apply->_from_uid << " name is "
+             << apply->_name << " desc is " << apply->_desc;
+
+    bool b_apply = UserMgr::GetInstance()->AlreadyApply(apply->_from_uid);
+    if(b_apply){
+        return;
+    }
+
+    UserMgr::GetInstance()->AddApplyList(std::make_shared<ApplyInfo>(apply));
+    ui->side_contact_lb->ShowRedPoint(true);
+    ui->con_user_list->ShowRedPoint(true);
+    ui->apply_friend_page->AddNewApply(apply);
 }

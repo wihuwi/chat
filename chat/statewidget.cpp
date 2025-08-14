@@ -153,15 +153,27 @@ void StateWidget::SetSelected(bool bselected)
 
 void StateWidget::AddRedPoint()
 {
+    //bug fix
     //添加红点示意图
     _red_point = new QLabel();
     _red_point->setObjectName("red_point");
     QVBoxLayout* layout2 = new QVBoxLayout;
     _red_point->setAlignment(Qt::AlignCenter);
     layout2->addWidget(_red_point);
-    layout2->setContentsMargins(0, 0, 0, 0);
+    //layout2->setContentsMargins(0, 0, 0, 0);
     this->setLayout(layout2);
     _red_point->setVisible(false);
+
+        // _red_point = new QLabel(this);
+        // _red_point->setObjectName("red_point");
+        // _red_point->setFixedSize(8, 8); // 红点大小
+        // _red_point->setAlignment(Qt::AlignCenter);
+
+        // // 直接设置绝对位置（右上角）
+        // _red_point->move(width() - _red_point->width(), 0);
+        // _red_point->raise(); // 确保在最上层
+        // _red_point->setVisible(false);
+
 }
 
 void StateWidget::ShowRedPoint(bool show)

@@ -13,11 +13,16 @@ public:
     void SetToken(QString token);
     QString GetName();
     int GetUid();
+    void SetUserInfo(std::shared_ptr<UserInfo> userinfo);
 
     bool IsLoadChatFin();
     std::vector<std::shared_ptr<FriendInfo>> GetConListPerPage();
     void UpdateContactLoadedCount();
     std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
+
+    bool AlreadyApply(int uid);
+    void AddApplyList(std::shared_ptr<ApplyInfo> apply);
+    void AppendApplyList(QJsonArray array);
 
 private:
     UserMgr();

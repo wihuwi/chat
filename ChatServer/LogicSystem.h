@@ -32,6 +32,7 @@ private:
 	bool isPureDigit(std::string str);
 	void GetUserByUid(std::string uid, Json::Value& value);
 	void GetUserByName(std::string name, Json::Value& value);
+	bool GetFriendApplyInfo(int uid, std::vector<std::shared_ptr<ApplyInfo>>& list);
 
 	std::queue<std::shared_ptr<LogicNode>> _msg_que;
 	std::thread _work_thread;

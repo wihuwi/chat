@@ -9,6 +9,7 @@
 #include "usermgr.h"
 #include "tcpmgr.h"
 #include "applyfriendlist.h"
+#include "authenfriend.h"
 
 ApplyFriendPage::ApplyFriendPage(QWidget *parent)
     : QDialog(parent)
@@ -46,10 +47,10 @@ void ApplyFriendPage::AddNewApply(std::shared_ptr<AddFriendApply> apply)
     _unauth_items[apply->_from_uid] = apply_item;
     //收到审核好友信号
     connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info) {
-        // auto* authFriend = new AuthenFriend(this);
-        // authFriend->setModal(true);
-        // authFriend->SetApplyInfo(apply_info);
-        // authFriend->show();
+        auto* authFriend = new AuthenFriend(this);
+        authFriend->setModal(true);
+        authFriend->SetApplyInfo(apply_info);
+        authFriend->show();
     });
 }
 
@@ -87,10 +88,10 @@ void ApplyFriendPage::LoadApplyList()
 
         //收到审核好友信号
         connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info) {
-            // auto* authFriend = new AuthenFriend(this);
-            // authFriend->setModal(true);
-            // authFriend->SetApplyInfo(apply_info);
-            // authFriend->show();
+            auto* authFriend = new AuthenFriend(this);
+            authFriend->setModal(true);
+            authFriend->SetApplyInfo(apply_info);
+            authFriend->show();
         });
     }
 
@@ -113,10 +114,10 @@ void ApplyFriendPage::LoadApplyList()
         ui->apply_friend_list->setItemWidget(item, apply_item);
         //收到审核好友信号
         connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info){
-            // auto *authFriend =  new AuthenFriend(this);
-            // authFriend->setModal(true);
-            // authFriend->SetApplyInfo(apply_info);
-            // authFriend->show();
+            auto *authFriend =  new AuthenFriend(this);
+            authFriend->setModal(true);
+            authFriend->SetApplyInfo(apply_info);
+            authFriend->show();
         });
     }
 }

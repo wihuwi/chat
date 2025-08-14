@@ -54,7 +54,7 @@ public:
 		if (_b_stop) {
 			return nullptr;
 		}
-		auto& con = _connections.front();
+		std::unique_ptr<ChatService::Stub> con = std::move(_connections.front());
 		_connections.pop();
 		return std::move(con);
 	}
