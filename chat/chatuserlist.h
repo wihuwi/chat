@@ -11,10 +11,10 @@ public:
     ChatUserList(QWidget* parent = nullptr);
     ~ChatUserList();
 protected:
-    virtual void enterEvent(QEnterEvent* event) override;
-    virtual void leaveEvent(QEvent* event) override;
-    virtual void wheelEvent(QWheelEvent* event) override;
+    virtual bool eventFilter(QObject* obj, QEvent* e);
 
+private:
+    bool _load_pending;
 signals:
     void sig_loading_chat_user();
 };

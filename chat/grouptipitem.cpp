@@ -15,7 +15,7 @@ GroupTipItem::~GroupTipItem()
 }
 
 QSize GroupTipItem::SizeHint(){
-    return QSize(250, 35);
+    return QSize(250, 20);
 }
 
 void GroupTipItem::SetGroupTip(QString str){

@@ -64,6 +64,58 @@ background-color: rgb(63, 63, 63);</string>
        <number>0</number>
       </property>
       <item>
+       <widget class="StateWidget" name="side_head_lb" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="head_lb">
+           <property name="minimumSize">
+            <size>
+             <width>40</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <widget class="StateWidget" name="side_chat_lb" native="true">
         <property name="minimumSize">
          <size>
@@ -96,22 +148,6 @@ background-color: rgb(63, 63, 63);</string>
        </widget>
       </item>
       <item>
-       <widget class="StateWidget" name="side_head_lb" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>40</width>
-          <height>40</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Orientation::Vertical</enum>
@@ -129,6 +165,12 @@ background-color: rgb(63, 63, 63);</string>
    </item>
    <item>
     <widget class="QWidget" name="chat_user_wid" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>250</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>250</width>
@@ -231,9 +273,11 @@ background-color: rgb(63, 63, 63);</string>
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="ChatPage" name="chat_page"/>
+     <widget class="QWidget" name="init_page"/>
+     <widget class="FriendInfoPage" name="friend_info_page"/>
      <widget class="ApplyFriendPage" name="apply_friend_page"/>
     </widget>
    </item>
@@ -243,7 +287,7 @@ background-color: rgb(63, 63, 63);</string>
   <customwidget>
    <class>ClickedBtn</class>
    <extends>QPushButton</extends>
-   <header>clickedbtn.h</header>
+   <header location="global">clickedbtn.h</header>
   </customwidget>
   <customwidget>
    <class>CustomizeEdit</class>
@@ -281,6 +325,12 @@ background-color: rgb(63, 63, 63);</string>
    <class>ApplyFriendPage</class>
    <extends>QWidget</extends>
    <header location="global">applyfriendpage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FriendInfoPage</class>
+   <extends>QWidget</extends>
+   <header location="global">friendinfopage.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

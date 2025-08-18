@@ -115,6 +115,19 @@
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="ClickedBtn" name="addBtn">
         <property name="minimumSize">
          <size>
@@ -142,7 +155,7 @@
          </size>
         </property>
         <property name="text">
-         <string>TextLabel</string>
+         <string>已添加</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -174,7 +187,7 @@
   <customwidget>
    <class>ClickedBtn</class>
    <extends>QPushButton</extends>
-   <header>clickedbtn.h</header>
+   <header location="global">clickedbtn.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

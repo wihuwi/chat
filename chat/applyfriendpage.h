@@ -29,6 +29,7 @@ private:
 
 public slots:
     void slot_auth_rsp(std::shared_ptr<AuthRsp> );
+    void slot_add_auth_friend(std::shared_ptr<AuthInfo> info);
 signals:
     void sig_show_search(bool);
 

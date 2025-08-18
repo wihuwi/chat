@@ -133,6 +133,9 @@ public:
 	bool CheckPwd(const std::string& name, const std::string& pwd, UserInfo& userInfo);
 	bool AddFriendApply(const int& from, const int& to);
 	bool GetApplyList(int touid, std::vector<std::shared_ptr<ApplyInfo>>& list, int begin, int limit);
+	bool AuthFriendApply(int from, int to);
+	bool AddFriend(int from, int to, std::string backname);
+	bool GetFriendList(int self_uid, std::vector<std::shared_ptr<UserInfo>>& user_info_list);
 	std::shared_ptr<UserInfo> GetUser(int uid);
 	std::shared_ptr<UserInfo> GetUser(std::string name);
 

@@ -80,7 +80,7 @@
          <item>
           <widget class="QLabel" name="title_lb">
            <property name="text">
-            <string>hubin</string>
+            <string/>
            </property>
           </widget>
          </item>

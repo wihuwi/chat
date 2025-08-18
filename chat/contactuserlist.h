@@ -27,7 +27,8 @@ signals:
     void sig_switch_friend_info_page(std::shared_ptr<UserInfo>);
     void sig_loading_contact_user();
 public slots:
-
+    void slot_add_auth_friend(std::shared_ptr<AuthInfo> authinfo);
+    void slot_auth_rsp(std::shared_ptr<AuthRsp> authrsp);
 private slots:
     void slot_item_clicked(QListWidgetItem *item);
 };

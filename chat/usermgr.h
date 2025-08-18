@@ -13,16 +13,30 @@ public:
     void SetToken(QString token);
     QString GetName();
     int GetUid();
+    QString GetIcon();
+    std::shared_ptr<UserInfo> GetUserInfo();
     void SetUserInfo(std::shared_ptr<UserInfo> userinfo);
+    bool CheckFriendById(int uid);
+    std::shared_ptr<FriendInfo> GetFriendById(int id);
+
+    void AddFriend(std::shared_ptr<AuthRsp> auth_rsp);
+    void AddFriend(std::shared_ptr<AuthInfo> auth_info);
 
     bool IsLoadChatFin();
     std::vector<std::shared_ptr<FriendInfo>> GetConListPerPage();
     void UpdateContactLoadedCount();
+    bool IsLoadContactFin();
+    std::vector<std::shared_ptr<FriendInfo>> GetChatListPerPage();
+    void UpdateChatLoadedCount();
+
     std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
 
     bool AlreadyApply(int uid);
     void AddApplyList(std::shared_ptr<ApplyInfo> apply);
     void AppendApplyList(QJsonArray array);
+    void AppendFriendList(QJsonArray array);
+
+    void AppendFriendChatMsg(int friend_id,std::vector<std::shared_ptr<TextChatData>> msgs);
 
 private:
     UserMgr();
