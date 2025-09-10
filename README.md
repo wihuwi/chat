@@ -5,13 +5,19 @@
 <img width="853" height="827" alt="屏幕截图 2025-09-09 200007" src="https://github.com/user-attachments/assets/de191ac8-71ad-4cfb-a25f-e64350914345" />
 
 基本流程
+
 GateServer收到客户端的登录请求会先检验账号密码，成功就会向StatusServer请求目标服务器ChatServer的ip&port
+
 客户端事件请求一般直接发送请求至ChatServer，如果请求存在双方且对方在当前ChatServer就使用本地调用，如果不在当前ChatServer就使用rpc远程调用
+
 客户端与服务端使用json通信
+
 服务端之间通过rpc通信
 
 GateServer   专注接入和转发，高性能处理连接。
+
 StatusServer 用来保持多个ChatServer的负载均衡，这里简单的通过人数来均衡
+
 ChatServer   处理客户端的交互请求
 
 运行实例
