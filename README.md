@@ -1,4 +1,4 @@
-#chat
+基于boost库和qt实现的仿微信聊天系统
 
 基本框架图
 
@@ -17,14 +17,17 @@ ChatServer   处理客户端的交互请求
 运行实例
 
 注册
+
 <img width="300" height="500" alt="屏幕截图 2025-09-09 202603" src="https://github.com/user-attachments/assets/6a784b17-c046-4df1-ad2c-7d1eeae5741a" />
 <img width="300" height="500" alt="屏幕截图 2025-09-09 202609" src="https://github.com/user-attachments/assets/1cb307cf-1461-4e42-9f12-45ad1873f498" />
 <img width="300" height="500" alt="屏幕截图 2025-09-09 202716" src="https://github.com/user-attachments/assets/cfd06649-eadd-4b5c-b64d-ea88a4f7bcc8" />
 通过QTimer实现登陆成功跳转
 
 添加好友
+
 <img width="600" height="500" alt="屏幕截图 2025-09-09 203910" src="https://github.com/user-attachments/assets/9c145651-5f78-4c87-a63e-bd11edbf9a8b" />
 <img width="600" height="500" alt="屏幕截图 2025-09-09 204016" src="https://github.com/user-attachments/assets/4ce605c3-f618-40c9-963b-a48ce293519e" />
 
 聊天
+
 <img width="600" height="700" alt="屏幕截图 2025-09-09 204116" src="https://github.com/user-attachments/assets/e64019d4-2fde-486f-b772-55a08700c62a" />
